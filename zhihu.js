@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         知乎-隐藏标题
+// @name         知乎-隐藏标题和边栏
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  显示或者隐藏标题
@@ -22,28 +22,30 @@
         color: "#fff",
         background: "#3785f7",
         borderRadius: "4px",
-        opacity: ".4",
+        opacity: ".5",
         cursor: "pointer",
+        userSelect: "none",
     };
+    var $ = key => document.querySelector(key)
+    var header = $(".AppHeader");
+    var sideBar = $(".GlobalSideBar") || $(".Question-sideColumn");
+    var main = $(".Topstory-mainColumn") || $(".Question-mainColumn");
+    var mainWidth = main ?? null;
     var button = document.createElement("div");
-    button.innerHTML = "隐藏标题";
+    button.innerHTML = "隐藏";
     Object.keys(style).forEach((key) => (button.style[key] = style[key]));
+    header.classList.add("youhou-hide");
     document.body.appendChild(button);
 
     button.onclick = function () {
-        loadCssCode(".AppHeader{display:none}");
-        button.style.display = "none";
+        if (button.innerHTML == "隐藏") {
+            button.innerHTML = "显示";
+            header.style.display = sideBar.style.display = "none";
+            mainWidth && (main.style.width = "100%");
+        } else {
+            button.innerHTML = "隐藏";
+            header.style.display = sideBar.style.display = "block";
+            mainWidth && (main.style.width = mainWidth);
+        }
     };
-
-    function loadCssCode(code) {
-        var style = document.createElement("style");
-        style.type = "text/css";
-        style.rel = "stylesheet";
-        //for Chrome Firefox Opera Safari
-        style.appendChild(document.createTextNode(code));
-        //for IE
-        //style.styleSheet.cssText = code;
-        var head = document.getElementsByTagName("head")[0];
-        head.appendChild(style);
-    }
 })();
